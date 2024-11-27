@@ -13,6 +13,8 @@ use Modules\Invoices\Domain\Entities\Invoice;
  * @property int $price
  * @property int $quantity
  * @property Invoice $invoice
+ *
+ * @mixin \Eloquent
  */
 class InvoiceProductLineModel extends Model
 {

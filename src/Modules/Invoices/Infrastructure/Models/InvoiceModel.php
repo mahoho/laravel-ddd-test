@@ -2,7 +2,6 @@
 
 namespace Modules\Invoices\Infrastructure\Models;
 
-use Eloquent;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,7 +14,7 @@ use Modules\Invoices\Domain\Enums\StatusEnum;
  * @property string $customer_email
  * @property Collection<int,InvoiceProductLineModel> $product_lines
  *
- * @mixin Eloquent
+ * @mixin \Eloquent
  */
 class InvoiceModel extends Model
 {

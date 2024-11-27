@@ -7,15 +7,16 @@ use Modules\Invoices\Domain\Entities\Invoice;
 use Modules\Invoices\Domain\Entities\InvoiceProductLine;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 use Modules\Invoices\Domain\Repositories\InvoiceRepositoryInterface;
-use Modules\Invoices\Domain\ValueObjects\Price;
-use Modules\Invoices\Domain\ValueObjects\Quantity;
 use Modules\Notifications\Api\Dtos\NotifyData;
-use Modules\Notifications\Application\Facades\NotificationFacade;
+use Modules\Notifications\Api\NotificationFacadeInterface;
 use Ramsey\Uuid\Uuid;
 
 class InvoiceService
 {
-    public function __construct(private readonly InvoiceRepositoryInterface $invoiceRepository) {}
+    public function __construct(
+        private readonly InvoiceRepositoryInterface $invoiceRepository,
+        private readonly NotificationFacadeInterface $notificationFacade
+    ) {}
 
     /**
      * @param string $id
@@ -89,7 +90,7 @@ class InvoiceService
             $message
         );
 
-        NotificationFacade::notify($notificationData);
+        $this->notificationFacade->notify($notificationData);
         $invoice->setStatus(StatusEnum::Sending);
 
         $this->invoiceRepository->save($invoice);

@@ -10,7 +10,7 @@ use Modules\Invoices\Domain\Enums\StatusEnum;
 
 /**
  * @property string $id
- * @property string $status
+ * @property StatusEnum $status
  * @property string $customer_name
  * @property string $customer_email
  * @property Collection<int,InvoiceProductLineModel> $product_lines

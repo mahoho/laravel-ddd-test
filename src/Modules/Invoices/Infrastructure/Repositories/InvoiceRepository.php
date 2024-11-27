@@ -4,12 +4,8 @@ namespace Modules\Invoices\Infrastructure\Repositories;
 
 use Modules\Invoices\Domain\Entities\Invoice;
 use Modules\Invoices\Domain\Entities\InvoiceProductLine;
-use Modules\Invoices\Domain\Enums\StatusEnum;
 use Modules\Invoices\Domain\Repositories\InvoiceRepositoryInterface;
-use Modules\Invoices\Domain\ValueObjects\Price;
-use Modules\Invoices\Domain\ValueObjects\Quantity;
 use Modules\Invoices\Infrastructure\Models\InvoiceModel;
-use Modules\Invoices\Infrastructure\Models\InvoiceProductLineModel;
 use Ramsey\Uuid\Uuid;
 
 class InvoiceRepository implements InvoiceRepositoryInterface
@@ -65,19 +61,11 @@ class InvoiceRepository implements InvoiceRepositoryInterface
 
     private function toEntity(InvoiceModel $model): Invoice
     {
-        $productLines = $model->product_lines->map(function (InvoiceProductLineModel $lineModel) use ($model) {
-            return new InvoiceProductLine(
-                Uuid::fromString($lineModel->id),
-                $model->id,
-                $lineModel->name,
-                new Quantity($lineModel->quantity),
-                new Price($lineModel->price)
-            );
-        })->toArray();
+        $productLines = $model->product_lines->toArray();
 
         return new Invoice(
             id: Uuid::fromString($model->id),
-            status: StatusEnum::from($model->status),
+            status: $model->status,
             customerName: $model->customer_name,
             customerEmail: $model->customer_email,
             productLines: $productLines

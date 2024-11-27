@@ -4,8 +4,11 @@ namespace Modules\Invoices\Application\Services;
 
 use Modules\Invoices\Application\Exceptions\SendInvoiceException;
 use Modules\Invoices\Domain\Entities\Invoice;
+use Modules\Invoices\Domain\Entities\InvoiceProductLine;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 use Modules\Invoices\Domain\Repositories\InvoiceRepositoryInterface;
+use Modules\Invoices\Domain\ValueObjects\Price;
+use Modules\Invoices\Domain\ValueObjects\Quantity;
 use Modules\Notifications\Api\Dtos\NotifyData;
 use Modules\Notifications\Application\Facades\NotificationFacade;
 use Ramsey\Uuid\Uuid;
@@ -34,14 +37,14 @@ class InvoiceService
      * @param string $customerEmail
      * @return Invoice
      */
-    public function createInvoice(string $customerName, string $customerEmail): Invoice
+    public function createInvoice(string $customerName, string $customerEmail, array $productLines = []): Invoice
     {
         $invoice = new Invoice(
             id: Uuid::uuid4(),
             status: StatusEnum::Draft,
             customerName: $customerName,
             customerEmail: $customerEmail,
-            productLines: []
+            productLines: $productLines
         );
 
         $this->invoiceRepository->save($invoice);
@@ -73,7 +76,8 @@ class InvoiceService
         }
 
         foreach ($invoice->getProductLines() as $productLine) {
-            if ($productLine->getQuantity() <= 0 || $productLine->getUnitPrice() <= 0) {
+            /** @var InvoiceProductLine $productLine */
+            if ($productLine->getQuantity() <= 0 || $productLine->getPrice() <= 0) {
                 throw new SendInvoiceException("Product lines must have positive quantity and unit price");
             }
         }

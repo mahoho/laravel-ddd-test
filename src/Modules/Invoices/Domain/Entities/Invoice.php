@@ -4,19 +4,33 @@ namespace Modules\Invoices\Domain\Entities;
 
 use Modules\Common\Domain\Entity;
 use Modules\Invoices\Domain\Enums\StatusEnum;
+use Modules\Invoices\Domain\ValueObjects\Price;
+use Modules\Invoices\Domain\ValueObjects\Quantity;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class Invoice extends Entity
 {
+    private array $productLines = [];
+    private int $totalPrice = 0;
 
     public function __construct(
         private readonly UuidInterface $id,
         private StatusEnum $status,
         private readonly string $customerName,
         private readonly string $customerEmail,
-        private array $productLines = [],
-        private int $totalPrice = 0,
+        $productLines,
     ) {
+        foreach ($productLines as $lineData) {
+            $this->productLines[] = new InvoiceProductLine(
+                id: Uuid::uuid4(),
+                invoiceId: $this->getId(),
+                name: $lineData['name'],
+                quantity: new Quantity($lineData['quantity']),
+                price: new Price($lineData['price'])
+            );
+        }
+
         $this->totalPrice = $this->calculateTotalPrice();
     }
 
@@ -53,6 +67,7 @@ class Invoice extends Entity
     public function addProductLine(InvoiceProductLine $productLine): void
     {
         $this->productLines[] = $productLine;
+        $this->calculateTotalPrice();
     }
 
     public function getTotalPrice(): int

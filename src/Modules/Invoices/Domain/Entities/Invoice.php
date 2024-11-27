@@ -4,19 +4,23 @@ namespace Modules\Invoices\Domain\Entities;
 
 use Modules\Common\Domain\Entity;
 use Modules\Invoices\Domain\Enums\StatusEnum;
+use Ramsey\Uuid\UuidInterface;
 
 class Invoice extends Entity
 {
 
     public function __construct(
-        private string $id,
+        private readonly UuidInterface $id,
         private StatusEnum $status,
-        private string $customerName,
-        private string $customerEmail,
-        private array $productLines = []
-    ) {}
+        private readonly string $customerName,
+        private readonly string $customerEmail,
+        private array $productLines = [],
+        private int $totalPrice = 0,
+    ) {
+        $this->totalPrice = $this->calculateTotalPrice();
+    }
 
-    public function getId(): string
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -51,6 +55,11 @@ class Invoice extends Entity
         $this->productLines[] = $productLine;
     }
 
+    public function getTotalPrice(): int
+    {
+        return $this->totalPrice;
+    }
+
     public function calculateTotalPrice(): int
     {
         return array_sum(array_map(
@@ -66,7 +75,8 @@ class Invoice extends Entity
             'status' => $this->status->value,
             'customer_name' => $this->customerName,
             'customer_email' => $this->customerEmail,
-            'product_lines' => $this->productLines
+            'product_lines' => $this->productLines,
+            'total_price' => $this->totalPrice
         ];
     }
 }

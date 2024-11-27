@@ -10,6 +10,7 @@ use Modules\Invoices\Domain\ValueObjects\Price;
 use Modules\Invoices\Domain\ValueObjects\Quantity;
 use Modules\Invoices\Infrastructure\Models\InvoiceModel;
 use Modules\Invoices\Infrastructure\Models\InvoiceProductLineModel;
+use Ramsey\Uuid\Uuid;
 
 class InvoiceRepository implements InvoiceRepositoryInterface
 {
@@ -66,7 +67,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
     {
         $productLines = $model->product_lines->map(function (InvoiceProductLineModel $lineModel) use ($model) {
             return new InvoiceProductLine(
-                $lineModel->id,
+                Uuid::fromString($lineModel->id),
                 $model->id,
                 $lineModel->name,
                 new Quantity($lineModel->quantity),
@@ -75,7 +76,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         })->toArray();
 
         return new Invoice(
-            id: $model->id,
+            id: Uuid::fromString($model->id),
             status: StatusEnum::from($model->status),
             customerName: $model->customer_name,
             customerEmail: $model->customer_email,

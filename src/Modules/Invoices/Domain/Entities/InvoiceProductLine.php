@@ -5,11 +5,12 @@ namespace Modules\Invoices\Domain\Entities;
 use Modules\Common\Domain\Entity;
 use Modules\Invoices\Domain\ValueObjects\Price;
 use Modules\Invoices\Domain\ValueObjects\Quantity;
+use Ramsey\Uuid\UuidInterface;
 
 class InvoiceProductLine extends Entity
 {
     public function __construct(
-        private readonly string   $id,
+        private readonly UuidInterface  $id,
         private readonly string   $invoiceId,
         private readonly string   $name,
         private readonly Quantity $quantity,
@@ -18,7 +19,7 @@ class InvoiceProductLine extends Entity
     {
     }
 
-    public function getId(): string
+    public function getId(): UuidInterface
     {
         return $this->id;
     }

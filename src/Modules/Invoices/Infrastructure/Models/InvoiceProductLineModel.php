@@ -22,6 +22,7 @@ class InvoiceProductLineModel extends Model
     public $incrementing = false;
 
     protected $fillable = [
+        'id',
         'invoice_id',
         'name',
         'price',

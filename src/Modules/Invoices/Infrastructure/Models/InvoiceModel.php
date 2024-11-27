@@ -25,6 +25,7 @@ class InvoiceModel extends Model
     public $incrementing = false;
 
     protected $fillable = [
+        'id',
         'status',
         'customer_name',
         'customer_email',

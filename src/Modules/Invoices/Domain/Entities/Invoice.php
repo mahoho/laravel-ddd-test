@@ -22,13 +22,19 @@ class Invoice extends Entity
         $productLines,
     ) {
         foreach ($productLines as $lineData) {
-            $this->productLines[] = new InvoiceProductLine(
-                id: Uuid::uuid4(),
-                invoiceId: $this->getId(),
-                name: $lineData['name'],
-                quantity: new Quantity($lineData['quantity']),
-                price: new Price($lineData['price'])
-            );
+            if($lineData instanceof InvoiceProductLine) {
+                $invoiceLine = $lineData;
+            } else {
+                $invoiceLine = new InvoiceProductLine(
+                    id: Uuid::uuid4(),
+                    invoiceId: $this->getId(),
+                    name: $lineData['name'],
+                    quantity: new Quantity($lineData['quantity']),
+                    price: new Price($lineData['price'])
+                );
+            }
+
+            $this->productLines[] = $invoiceLine;
         }
 
         $this->totalPrice = $this->calculateTotalPrice();
@@ -77,10 +83,14 @@ class Invoice extends Entity
 
     public function calculateTotalPrice(): int
     {
-        return array_sum(array_map(
-            fn(InvoiceProductLine $line) => $line->getTotalUnitPrice(),
+        $this->totalPrice = array_sum(array_map(
+            function (InvoiceProductLine $line) {
+                return $line->getTotalUnitPrice();
+            },
             $this->productLines
         ));
+
+        return $this->totalPrice;
     }
 
     public function toArray(): array

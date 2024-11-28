@@ -2,6 +2,8 @@
 
 namespace Modules\Invoices\Infrastructure\Models;
 
+use Database\Factories\InvoiceProductLineModelFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Invoices\Domain\Entities\Invoice;
@@ -18,6 +20,8 @@ use Modules\Invoices\Domain\Entities\Invoice;
  */
 class InvoiceProductLineModel extends Model
 {
+    use HasFactory;
+
     protected $table = 'invoice_product_lines';
 
     protected $keyType = 'string';
@@ -35,6 +39,11 @@ class InvoiceProductLineModel extends Model
         'price'    => "int",
         'quantity' => "int",
     ];
+
+    protected static function newFactory() : InvoiceProductLineModelFactory
+    {
+        return InvoiceProductLineModelFactory::new();
+    }
 
     public function invoice() : BelongsTo
     {

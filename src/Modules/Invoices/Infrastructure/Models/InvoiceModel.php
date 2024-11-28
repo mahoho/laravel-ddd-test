@@ -2,7 +2,9 @@
 
 namespace Modules\Invoices\Infrastructure\Models;
 
+use Database\Factories\InvoiceModelFactory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Invoices\Domain\Enums\StatusEnum;
@@ -18,6 +20,8 @@ use Modules\Invoices\Domain\Enums\StatusEnum;
  */
 class InvoiceModel extends Model
 {
+    use HasFactory;
+
     protected $table = 'invoices';
 
     protected $keyType = 'string';
@@ -33,6 +37,11 @@ class InvoiceModel extends Model
     protected $casts = [
         'status' => StatusEnum::class,
     ];
+
+    protected static function newFactory() : InvoiceModelFactory
+    {
+        return InvoiceModelFactory::new();
+    }
 
     public function product_lines() : HasMany
     {
